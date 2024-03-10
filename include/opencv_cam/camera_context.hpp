@@ -21,6 +21,9 @@ namespace opencv_cam
   \
   CXT_MACRO_MEMBER(camera_info_path, std::string, "info.ini")     /* Camera info path */ \
   CXT_MACRO_MEMBER(camera_frame_id, std::string, "camera_frame")  /* Camera frame id */ \
+  CXT_MACRO_MEMBER(split_frame, bool, false)                      /* Split frame in the middle? */ \
+  CXT_MACRO_MEMBER(camera_frame_id2, std::string, "right_frame")  /* Camera frame id for split image */ \
+
 /* End of list */
 
 

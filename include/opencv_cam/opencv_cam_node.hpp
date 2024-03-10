@@ -39,6 +39,7 @@ namespace opencv_cam
     void validate_parameters();
 
     void loop();
+    sensor_msgs::msg::Image::UniquePtr create_image_msg(rclcpp::Time &stamp, cv::Mat &frame, std::string frame_id);
   };
 
 } // namespace opencv_cam

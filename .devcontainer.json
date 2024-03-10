@@ -1,0 +1,22 @@
+{
+    "name": "ROS Humble",
+    "image":"osrf/ros:humble-desktop-full",
+    "containerEnv": {
+      "SHELL": "/bin/bash",
+      "DISPLAY": "unix:0"
+    },
+    "runArgs": ["--privileged"],
+    "mounts": [
+      "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached"
+    ],
+    "customizations": {
+      "vscode": {
+        // Add the IDs of extensions you want installed when the container is created.
+        "extensions": [
+          "nonanonno.vscode-ros",
+          "ms-vscode.cpptools",
+          "ms-azuretools.vscode-docker"
+        ]
+      }
+    }
+  }

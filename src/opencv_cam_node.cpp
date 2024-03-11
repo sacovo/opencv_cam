@@ -127,6 +127,9 @@ namespace opencv_cam
     }
 
     image_pub_ = create_publisher<sensor_msgs::msg::Image>("image_raw", 10);
+    if (cxt_.split_frame_) {
+      image_pub2_ = create_publisher<sensor_msgs::msg::Image>("image_raw2", 10);
+    }
 
     // Run loop on it's own thread
     thread_ = std::thread(std::bind(&OpencvCamNode::loop, this));
@@ -167,16 +170,17 @@ namespace opencv_cam
       {
         auto half_width = frame.cols / 2;
         cv::Rect roi_left(0, 0, half_width, frame.rows);
-        cv::Rect roi_right(half_width, 0, frame.cols, frame.rows);
+        cv::Rect roi_right(half_width, 0, half_width, frame.rows);
 
-        cv::Mat left = frame(roi_left);
-        cv::Mat right = frame(roi_right);
+        cv::Mat left(frame, roi_left);
+        cv::Mat right(frame.rows, half_width, frame.type());
+        frame(roi_right).copyTo(right);
 
         auto img_left = create_image_msg(stamp, left, cxt_.camera_frame_id_);
         auto img_right = create_image_msg(stamp, right, cxt_.camera_frame_id2_);
 
         image_pub_->publish(std::move(img_left));
-        image_pub_->publish(std::move(img_right));
+        image_pub2_->publish(std::move(img_right));
       }
       else
       {

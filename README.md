@@ -75,6 +75,8 @@ ros2 run opencv_cam ipc_test_main
 | height | int | 0 | Device width in pixels. Specify 0 for default. Ignored if file is True |
 | camera_info_path | string | "info.ini" | Camera info path |
 | camera_frame | string | "camera_frame" | Camera frame id |
+| compression | string | "" | Like "jpeg" |
+| split_frame | bool | false | Use for stereo video |
 
 ## Camera info file formats
 

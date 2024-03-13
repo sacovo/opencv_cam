@@ -6,6 +6,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/camera_info.hpp"
 #include "sensor_msgs/msg/image.hpp"
+#include "sensor_msgs/msg/compressed_image.hpp"
 
 #include "opencv_cam/camera_context.hpp"
 
@@ -25,8 +26,8 @@ namespace opencv_cam
     int publish_fps_;
     rclcpp::Time next_stamp_;
 
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr image_pub_;
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr image_pub2_;
+    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr image_pub_, image_pub2_;
+    rclcpp::Publisher<sensor_msgs::msg::CompressedImage>::SharedPtr cimage_pub_, cimage_pub2_;
 
     rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr camera_info_pub_;
 
@@ -41,7 +42,13 @@ namespace opencv_cam
     void validate_parameters();
 
     void loop();
+
+    
+    void create_and_publish_image(rclcpp::Time &stamp, cv::Mat &frame, std::string frame_id, rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub);
+    void create_and_publish_cimage(std::string compression, rclcpp::Time &stamp, cv::Mat &frame, std::string frame_id, rclcpp::Publisher<sensor_msgs::msg::CompressedImage>::SharedPtr pub);
+
     sensor_msgs::msg::Image::UniquePtr create_image_msg(rclcpp::Time &stamp, cv::Mat &frame, std::string frame_id);
+    sensor_msgs::msg::CompressedImage::UniquePtr create_cimage_msg(rclcpp::Time &stamp, cv::Mat &frame, std::string frame_id, std::string compression);
   };
 
 } // namespace opencv_cam

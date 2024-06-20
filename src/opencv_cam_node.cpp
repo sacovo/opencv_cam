@@ -112,6 +112,8 @@ namespace opencv_cam
       }
 
       double width = capture_->get(cv::CAP_PROP_FRAME_WIDTH);
+
+      half_width = width / 2;
       double height = capture_->get(cv::CAP_PROP_FRAME_HEIGHT);
       double fps = capture_->get(cv::CAP_PROP_FPS);
       RCLCPP_INFO(get_logger(),
@@ -161,8 +163,8 @@ namespace opencv_cam
 
   void OpencvCamNode::loop()
   {
-    cv::Mat frame;
 
+    cv::Mat frame;
     while (rclcpp::ok() && !canceled_.load())
     {
       // Read a frame, if this is a device block until a frame is available
@@ -176,7 +178,6 @@ namespace opencv_cam
 
       if (cxt_.split_frame_)
       {
-        auto half_width = frame.cols / 2;
         cv::Rect roi_left(0, 0, half_width, frame.rows);
         cv::Rect roi_right(half_width, 0, half_width, frame.rows);
 
@@ -229,22 +230,38 @@ namespace opencv_cam
   }
 
   sensor_msgs::msg::Image::UniquePtr
-  OpencvCamNode::create_image_msg(rclcpp::Time &stamp, cv::Mat &frame,
+  OpencvCamNode::create_image_msg(rclcpp::Time &stamp, cv::Mat &image,
                                   std::string frame_id)
   {
-    sensor_msgs::msg::Image::UniquePtr image_msg(new sensor_msgs::msg::Image());
+    sensor_msgs::msg::Image::UniquePtr ros_image(new sensor_msgs::msg::Image());
 
-    image_msg->header.stamp = stamp;
-    image_msg->header.frame_id = frame_id;
-    image_msg->height = frame.rows;
-    image_msg->width = frame.cols;
-    image_msg->encoding = mat_type2encoding(frame.type());
-    image_msg->is_bigendian = false;
-    image_msg->step =
-        static_cast<sensor_msgs::msg::Image::_step_type>(frame.step);
+    ros_image->header.stamp = stamp;
+    ros_image->header.frame_id = frame_id;
+    ros_image->height = image.rows;
+    ros_image->width = image.cols;
+    ros_image->encoding = "bgr8";
+    // ros_image->is_bigendian = (rcpputils::endian::native == rcpputils::endian::big);
+    ros_image->step = image.cols * image.elemSize();
+    size_t size = ros_image->step * image.rows;
+    ros_image->data.resize(size);
 
-    image_msg->data.assign(frame.datastart, frame.dataend);
-    return image_msg;
+    if (image.isContinuous())
+    {
+      memcpy(reinterpret_cast<char *>(&ros_image->data[0]), image.data, size);
+    }
+    else
+    {
+      // Copy by row by row
+      uchar *ros_data_ptr = reinterpret_cast<uchar *>(&ros_image->data[0]);
+      uchar *cv_data_ptr = image.data;
+      for (int i = 0; i < image.rows; ++i)
+      {
+        memcpy(ros_data_ptr, cv_data_ptr, ros_image->step);
+        ros_data_ptr += ros_image->step;
+        cv_data_ptr += image.step;
+      }
+    }
+    return ros_image;
   }
   sensor_msgs::msg::CompressedImage::UniquePtr
   OpencvCamNode::create_cimage_msg(rclcpp::Time &stamp, cv::Mat &frame,

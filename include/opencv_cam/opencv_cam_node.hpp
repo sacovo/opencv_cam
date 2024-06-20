@@ -27,6 +27,8 @@ namespace opencv_cam
     int publish_fps_;
     rclcpp::Time next_stamp_;
 
+    double half_width;
+
     image_transport::Publisher image_pub_, image_pub2_;
     rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr camera_info_pub_;
 

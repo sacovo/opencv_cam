@@ -175,6 +175,13 @@ namespace opencv_cam
       }
 
       auto stamp = now();
+      
+      if (cxt_.flip_)
+      {
+        cv::Mat dst;
+        cv::flip(frame, dst, -1);
+        dst.copyTo(frame);
+      }
 
       if (cxt_.split_frame_)
       {

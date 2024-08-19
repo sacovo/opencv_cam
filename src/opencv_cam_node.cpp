@@ -179,7 +179,7 @@ namespace opencv_cam
       if (cxt_.flip_)
       {
         cv::Mat dst;
-        cv::flip(frame, dst, -1);
+        cv::flip(frame, dst, cxt_.flip_);
         dst.copyTo(frame);
       }
 

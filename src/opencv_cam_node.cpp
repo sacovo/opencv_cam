@@ -77,6 +77,14 @@ namespace opencv_cam
         // Publish at the recorded rate
         publish_fps_ = static_cast<int>(capture_->get(cv::CAP_PROP_FPS));
       }
+      
+      if (cxt_.pixel_format_ != "")
+      {
+        int fourcc = cv::VideoWriter::fourcc(
+            cxt_.pixel_format_[0], cxt_.pixel_format_[1],
+            cxt_.pixel_format_[2], cxt_.pixel_format_[3]);
+        capture_->set(cv::CAP_PROP_FOURCC, fourcc);
+      }
 
       double width = capture_->get(cv::CAP_PROP_FRAME_WIDTH);
       double height = capture_->get(cv::CAP_PROP_FRAME_HEIGHT);
@@ -96,6 +104,14 @@ namespace opencv_cam
         return;
       }
 
+      if (cxt_.pixel_format_ != "")
+      {
+        int fourcc = cv::VideoWriter::fourcc(
+            cxt_.pixel_format_[0], cxt_.pixel_format_[1],
+            cxt_.pixel_format_[2], cxt_.pixel_format_[3]);
+        capture_->set(cv::CAP_PROP_FOURCC, fourcc);
+      }
+
       if (cxt_.height_ > 0)
       {
         capture_->set(cv::CAP_PROP_FRAME_HEIGHT, cxt_.height_);
@@ -110,6 +126,7 @@ namespace opencv_cam
       {
         capture_->set(cv::CAP_PROP_FPS, cxt_.fps_);
       }
+      
 
       double width = capture_->get(cv::CAP_PROP_FRAME_WIDTH);
 
@@ -171,7 +188,7 @@ namespace opencv_cam
       if (!capture_->read(frame))
       {
         RCLCPP_INFO(get_logger(), "EOF, stop publishing");
-        break;
+        continue;
       }
 
       auto stamp = now();
@@ -180,6 +197,26 @@ namespace opencv_cam
       {
         cv::Mat dst;
         cv::flip(frame, dst, cxt_.flip_);
+        dst.copyTo(frame);
+      }
+      
+      // Rotate 90/180/270 degrees if required
+      if(cxt_.rotate_ == 90) // 90 degrees
+      {
+        cv::Mat dst;
+        cv::rotate(frame, dst, cv::ROTATE_90_CLOCKWISE);
+        dst.copyTo(frame);
+      }
+      else if(cxt_.rotate_ == 180) // 180 degrees
+      {
+        cv::Mat dst;
+        cv::rotate(frame, dst, cv::ROTATE_180);
+        dst.copyTo(frame);
+      }
+      else if(cxt_.rotate_ == 270) // 270 degrees
+      {
+        cv::Mat dst;
+        cv::rotate(frame, dst, cv::ROTATE_90_COUNTERCLOCKWISE);
         dst.copyTo(frame);
       }
 

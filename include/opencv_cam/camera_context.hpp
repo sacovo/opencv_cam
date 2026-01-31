@@ -18,12 +18,14 @@ namespace opencv_cam
   CXT_MACRO_MEMBER(index, int, 0)                                 /* Device index, see cv::VideoCaptureAPIs */ \
   CXT_MACRO_MEMBER(width, int, 0)                                 /* Device width */ \
   CXT_MACRO_MEMBER(height, int, 0)                                /* Device height */ \
+  CXT_MACRO_MEMBER(pixel_format, std::string, "")                 /* Pixel format */ \
   \
   CXT_MACRO_MEMBER(camera_info_path, std::string, "info.ini")     /* Camera info path */ \
   CXT_MACRO_MEMBER(camera_frame_id, std::string, "camera_frame")  /* Camera frame id */ \
   CXT_MACRO_MEMBER(split_frame, bool, false)                      /* Split frame in the middle? */ \
   CXT_MACRO_MEMBER(camera_frame_id2, std::string, "right_frame")  /* Camera frame id for split image */ \
   CXT_MACRO_MEMBER(flip, int, 0)                            /* Flip image? */ \
+  CXT_MACRO_MEMBER(rotate, int, 0)                            /* Rotate image? */ \
 /* End of list */
 
 

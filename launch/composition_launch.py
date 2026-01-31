@@ -11,34 +11,36 @@ from launch_ros.descriptions import ComposableNode
 
 
 def generate_launch_description():
-    movie = 'test.mov'
-    camera_info_path = 'info.ini'
+    movie = "test.mov"
+    camera_info_path = "info.ini"
 
     container = ComposableNodeContainer(
-        name='my_container',
-        namespace='',
-        package='rclcpp_components',
-        executable='component_container',
+        name="my_container",
+        namespace="",
+        package="rclcpp_components",
+        executable="component_container",
         composable_node_descriptions=[
             ComposableNode(
-                package='opencv_cam',
-                plugin='opencv_cam::OpencvCamNode',
-                name='image_publisher',
-                parameters=[{
-                    'file': True,
-                    'filename': movie,
-                    'camera_info_path': camera_info_path,
-                }],
-                extra_arguments=[{'use_intra_process_comms': True}],
+                package="opencv_cam",
+                plugin="opencv_cam::OpencvCamNode",
+                name="image_publisher",
+                parameters=[
+                    {
+                        "file": True,
+                        "filename": movie,
+                        "camera_info_path": camera_info_path,
+                    }
+                ],
+                extra_arguments=[{"use_intra_process_comms": True}],
             ),
             ComposableNode(
-                package='opencv_cam',
-                plugin='opencv_cam::ImageSubscriberNode',
-                name='image_subscriber',
-                extra_arguments=[{'use_intra_process_comms': True}],
+                package="opencv_cam",
+                plugin="opencv_cam::ImageSubscriberNode",
+                name="image_subscriber",
+                extra_arguments=[{"use_intra_process_comms": True}],
             ),
         ],
-        output='screen',
+        output="screen",
     )
 
     return launch.LaunchDescription([container])
